@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Objects;
 
 public class NoteBook {
+    private Long id;
     private String surnameOfSubscriber;
     private String nameOfSubscriber;
     private String patronymicOfSubscriber;
@@ -103,5 +104,25 @@ public class NoteBook {
 
     public Date getLastRecording() {
         return lastRecording;
+    }
+
+    public Long getId() {
+        Objects.requireNonNull(id);
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "NoteBook{" +
+                "id=" + id +
+                ", surnameOfSubscriber='" + surnameOfSubscriber + '\'' +
+                ", nameOfSubscriber='" + nameOfSubscriber + '\'' +
+                ", patronymicOfSubscriber='" + patronymicOfSubscriber + '\'' +
+                ", nickName='" + nickName + '\'' +
+                '}';
     }
 }

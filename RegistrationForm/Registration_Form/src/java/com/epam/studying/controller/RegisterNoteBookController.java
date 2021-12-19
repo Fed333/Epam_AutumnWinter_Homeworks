@@ -1,10 +1,12 @@
 package com.epam.studying.controller;
 
+import com.epam.studying.dao.impl.NotUniqueNicknameException;
 import com.epam.studying.entity.NoteBook;
 import com.epam.studying.model.Model;
 import com.epam.studying.service.NoteBookService;
 import com.epam.studying.view.View;
 
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 
@@ -28,7 +30,13 @@ public class RegisterNoteBookController {
         NoteBook noteBook = new NoteBook();
         readName(noteBook, in);
         readNickname(noteBook, in);
-        view.printMessage(bundle.getString(INPUT_REGISTRATION_SUCCESSFUL));
+        try {
+            noteBookService.save(noteBook);
+            view.printMessage(bundle.getString(INPUT_REGISTRATION_SUCCESSFUL));
+        }
+        catch (SQLException e){
+            view.printStringInput("Message: " + e.getMessage());
+        }
     }
 
     private void readName(NoteBook note, Scanner in){
@@ -36,7 +44,17 @@ public class RegisterNoteBookController {
     }
 
     private void readNickname(NoteBook note, Scanner in){
-        readAttribute(note, in, INPUT_NICKNAME_DATA, NoteBookService::setNickname, View::wrongNickNameWarning);
+        for(boolean run=true; run;) {
+            try {
+                readAttribute(note, in, INPUT_NICKNAME_DATA, NoteBookService::setNickname, View::wrongNickNameWarning);
+                noteBookService.requireUniqueNickname(note);
+                run = false;
+            }
+            catch (NotUniqueNicknameException e){
+                view.printMessage(e.getMessage());
+                run = true;
+            }
+        }
     }
 
     /**
@@ -47,7 +65,8 @@ public class RegisterNoteBookController {
             String InputData,
             SetStringNoteBookAttribute attribute,
             GetWarningFormatType warning
-    ){
+    )
+    {
         String name = "";
         view.printStringInput(InputData);
         while(! (in.hasNext() && attribute.set(noteBookService, note, name = String.valueOf(in.next())))){

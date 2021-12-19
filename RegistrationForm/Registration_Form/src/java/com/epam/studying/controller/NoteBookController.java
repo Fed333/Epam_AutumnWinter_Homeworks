@@ -1,5 +1,6 @@
 package com.epam.studying.controller;
 
+import com.epam.studying.dao.impl.NoteBookDaoImpl;
 import com.epam.studying.model.Model;
 import com.epam.studying.service.NoteBookService;
 import com.epam.studying.view.View;
@@ -17,6 +18,10 @@ public class NoteBookController {
     }
 
     public void processNoteBook(Scanner in){
-        new RegisterNoteBookController(model, view, new NoteBookService(View.bundle)).registerNoteBook(in);
+        new RegisterNoteBookController(
+                model,
+                view,
+                new NoteBookService(View.bundle, new NoteBookDaoImpl(model.getConnection()))
+        ).registerNoteBook(in);
     }
 }
